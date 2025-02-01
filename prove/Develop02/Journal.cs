@@ -8,13 +8,13 @@ namespace DailyJournal
     {
         private List<Entry> entries; // List to store journal entries
 
-        // Constructor initializes the list
+        
         public Journal()
         {
             entries = new List<Entry>();
         }
 
-        // Adds a new entry based on a given prompt
+        // should a new entry based on a given prompt
         public void AddEntry(string prompt)
         {
             Console.Write(prompt + " ");
@@ -26,7 +26,7 @@ namespace DailyJournal
             entries.Add(newEntry);
         }
 
-        // Displays all journal entries
+        // Displays all journal entries with date and prompt
         public void DisplayEntries()
         {
             if (entries.Count == 0)
@@ -42,7 +42,7 @@ namespace DailyJournal
             }
         }
 
-        // Saves journal entries to a file
+        // Save the entry to a file
         public void SaveToFile()
         {
             Console.Write("Enter filename: ");
@@ -76,14 +76,14 @@ namespace DailyJournal
 
             using (StreamReader reader = new StreamReader(filename))
             {
-                reader.ReadLine(); // Skip header line
+                reader.ReadLine(); 
 
                 while (!reader.EndOfStream)
                 {
                     string entryLine = reader.ReadLine();
-                    string[] fields = entryLine.Split('|'); // Correct delimiter
+                    string[] fields = entryLine.Split('|'); 
 
-                    // Ensure correct number of fields
+                    
                     if (fields.Length < 3)
                     {
                         Console.WriteLine("Error loading entry: " + entryLine);

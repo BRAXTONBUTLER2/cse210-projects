@@ -1,78 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using DailyJournal;
 
-class Journal
-{
-    public List<string> Entries { get; set; }
-
-    public Journal()
-    {
-        Entries = new List<string>();
-    }
-
-    // Adds a new entry to the journal
-    public void AddEntry(string prompt)
-    {
-        Console.WriteLine(prompt);
-        string entry = Console.ReadLine();
-        Entries.Add(entry);
-    }
-
-    // Displays all journal entries
-    public void DisplayEntries()
-    {
-        if (Entries.Count == 0)
-        {
-            Console.WriteLine("No journal entries found.");
-            return;
-        }
-
-        foreach (var entry in Entries)
-        {
-            Console.WriteLine(entry);
-        }
-    }
-
-    // Saves journal entries to a file
-    public void SaveToFile()
-    {
-        Console.Write("Enter the filename to save your journal entries: ");
-        string filename = Console.ReadLine();
-        try
-        {
-            File.WriteAllLines(filename, Entries);
-            Console.WriteLine($"Journal saved to {filename}");
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine($"Error saving to file: {e.Message}");
-        }
-    }
-
-    // Loads journal entries from a file
-    public void LoadFromFile()
-    {
-        Console.Write("Enter the filename to load your journal entries: ");
-        string filename = Console.ReadLine();
-        try
-        {
-            if (File.Exists(filename))
-            {
-                Entries = new List<string>(File.ReadAllLines(filename));
-                Console.WriteLine("Journal loaded successfully.");
-            }
-            else
-            {
-                Console.WriteLine("File not found.");
-            }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine($"Error loading from file: {e.Message}");
-        }
-    }
-}
 
 class Program
 {
@@ -80,7 +10,7 @@ class Program
     {
         Journal journal = new Journal();
 
-        // List of prompts to choose from
+        // List of prompts to choose from genterated new ones
         List<string> prompts = new List<string>
         {
             "What moment today made you feel grateful and why?",
@@ -104,8 +34,16 @@ class Program
         bool quit = false;
         while (!quit)
         {
-            // Display menu
-            Console.WriteLine("\nWelcome to the Journal Program");
+            // Display menu and change color
+            Console.ForegroundColor = ConsoleColor.Cyan;
+           Console.WriteLine(@"
+______     _            _           ___                              _ 
+| ___ \   (_)          | |         |_  |                            | |
+| |_/ / __ ___   ____ _| |_ ___      | | ___  _   _ _ __ _ __   __ _| |
+|  __/ '__| \ \ / / _` | __/ _ \     | |/ _ \| | | | '__| '_ \ / _` | |
+| |  | |  | |\ V / 1_| | ||  __/ /\__/ / (_) | |_| | |  | | | | (_) | |
+\_|  |_|  |_| \_/ \__,_|\__\___| \____/ \___/ \__,_|_|  |_| |_|\__,_|_|
+");
             Console.WriteLine("1. Write an Entry");
             Console.WriteLine("2. Display Journal");
             Console.WriteLine("3. Save Journal to File");
@@ -115,7 +53,7 @@ class Program
 
             string choice = Console.ReadLine();
 
-            // Handle user input
+            //  user input stuffs
             switch (choice)
             {
                 case "1":

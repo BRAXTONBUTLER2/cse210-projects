@@ -3,14 +3,14 @@ using System.IO;
 
 namespace DailyJournal
 {
-    // Represents a single journal entry
+    // one journa entry
     class Entry
     {
         public string _prompt;
         public string _response;
         public string _date;
 
-        // Constructor to initialize entry
+        // starts or inializes entry
         public Entry(string prompt, string response, string date)
         {
             _prompt = prompt;
@@ -18,7 +18,7 @@ namespace DailyJournal
             _date = date;
         }
 
-        // Getters for each field
+        
         public string GetPrompt() => _prompt;
         public string GetResponse() => _response;
         public string GetDate() => _date;
