@@ -4,7 +4,7 @@ class Program
 {
     static void Main(string[] args)
     {
-        Console.Write("Hello and welcome to my program! ");  // Fixed missing semicolon
+        Console.Write("Hello and welcome to my program! ");  
         Console.Write("What is your first name? ");
         string firstname = Console.ReadLine();
         Console.WriteLine($"Hello {firstname}");
