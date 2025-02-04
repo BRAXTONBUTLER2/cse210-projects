@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using DailyJournal;
 
-
+// I changed the colors and also addec custom ASCII art to exceed requirnments :)//
 class Program
 {
     static void Main(string[] args)
