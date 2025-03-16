@@ -1,0 +1,7 @@
+Simple Goal:; Drink More Water; Drink at least 8 cups of water daily; 10; True  
+Simple Goal:; Walk More; Take a 30-minute walk each day; 25; False  
+Eternal Goal:; Pray More; Say meaningful prayers every morning and night; 5; False  
+Check List Goal:; Exercise Regularly; Work out at least three times a week; 50; False; 12; 300; 3  
+Eternal Goal:; Serve Others; Do one act of service for someone each week; 50; False  
+Check List Goal:; Save Money; Put money into savings every paycheck; 100; False; 24; 1000; 3  
+Check List Goal:; Reduce Screen Time; Spend less than 2 hours a day on social media; 25; True; 30; 750; 10  
