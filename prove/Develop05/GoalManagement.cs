@@ -1,148 +1,166 @@
 using System;
 using System.IO;
+using System.Collections.Generic;
 
-public class GoalManagement
-
+public class GoalManager
 {
-    // Attributes
-    private List<Goal> _goals = new List<Goal>();
-    private int _totalPoints;
+    private List<Goal> _goals;
+    private int _totalScore;
 
-
-    // Constructors
-    public GoalManagement()
+    public GoalManager()
     {
-        _totalPoints = 0;
+        _goals = new List<Goal>();
+        _totalScore = 0;
     }
+
     public void AddGoal(Goal goal)
     {
         _goals.Add(goal);
     }
-    public int GetTotalPoints()
-    {
-        return _totalPoints;
-    }
-    public void AddPoints(int points)
-    {
-        _totalPoints += points;
-    }
-    public void AddBonus(int bonusPoints)
-    {
-        _totalPoints += bonusPoints;
-    }
-    public void SetTotalPoints(int totalPoints)
-    {
-        _totalPoints = totalPoints;
-    }
-    public List<Goal> GetGoalsList()
-    {
-        return _goals;
-    }
 
-    // Methods
-    public void ListGoals()
+    public void DisplayGoals()
     {
-        if (_goals.Count() > 0)
+        if (_goals.Count == 0)
         {
-            Console.WriteLine("\nYour Goals are:");
+            Console.WriteLine("No goals have been added yet.");
+            return;
+        }
 
-            int index = 1;
-            // Loop though goals list
+        Console.WriteLine("\nYour Goals:");
+        foreach (var goal in _goals)
+        {
+            Console.WriteLine(goal.DisplayStatus());
+        }
+    }
+
+    public void RecordGoalProgress(int goalIndex)
+    {
+        if (goalIndex < 0 || goalIndex >= _goals.Count)
+        {
+            Console.WriteLine("Invalid selection. Try again.");
+            return;
+        }
+
+        _goals[goalIndex].RecordProgress();
+        _totalScore = CalculateTotalScore();
+        Console.WriteLine($"New Total Score: {_totalScore} points!");
+
+        SaveGoals("goals.txt");
+
+        DisplayGoals();
+    }
+
+    private int CalculateTotalScore()
+    {
+        int total = 0;
+        foreach (Goal goal in _goals)
+        {
+            total += goal.GetEarnedPoints();
+        }
+        return total;
+    }
+
+    public void DisplayTotalScore()
+    {
+        Console.WriteLine($"\nTotal Score: {_totalScore} points");
+    }
+
+    public void SaveGoals(string filename)
+    {
+        using (StreamWriter writer = new StreamWriter(filename))
+        {
             foreach (Goal goal in _goals)
             {
-                goal.ListGoal(index);
-                index = index + 1;
+                if (goal is SimpleGoal simpleGoal)
+                {
+                    writer.WriteLine($"{goal.GetType().Name}|{goal.GetName()}|{goal.GetDescription()}|{goal.GetPointsWorth()}|{simpleGoal.IsComplete()}");
+                }
+                else if (goal is ChecklistGoal checklistGoal)
+                {
+                    writer.WriteLine($"{goal.GetType().Name}|{goal.GetName()}|{goal.GetDescription()}|{goal.GetPointsWorth()}|{checklistGoal.GetTimesCompleted()}|{checklistGoal.GetTargetCount()}|{checklistGoal.GetBonusPoints()}");
+                }
+                else
+                {
+                    writer.WriteLine($"{goal.GetType().Name}|{goal.GetName()}|{goal.GetDescription()}|{goal.GetPointsWorth()}");
+                }
             }
         }
-        else
+        Console.WriteLine("Goals saved successfully to " + filename);
+    }
+
+    public void LoadGoals(string filename)
+    {
+        if (!File.Exists(filename))
         {
-            Console.WriteLine("\nYou currently have no goals!");
+            Console.WriteLine("No saved goals found.");
+            return;
         }
-    }
-    public void RecordGoalEvent()
-    {
-        ListGoals();
 
-        Console.Write("\nWhich goal did you accomplished?  ");
-        int select = int.Parse(Console.ReadLine())-1;
+        _goals.Clear();
 
-        int goalPoints = GetGoalsList()[select].GetPoints();
-        AddPoints(goalPoints);
-
-        GetGoalsList()[select].RecordGoalEvent(_goals);
-
-        Console.WriteLine($"\n*** You have {GetTotalPoints()} points! ***\n");
-    }
-    public void SaveGoals()
-    {
-        Console.Write("\nWhat is the name for this goal file?  ");
-        string userInput = Console.ReadLine();
-        string userFileName = userInput + ".txt";
-
-        using (StreamWriter outputFile = new StreamWriter(userFileName))
+        using (StreamReader reader = new StreamReader(filename))
         {
-            // Save Total Points
-            outputFile.WriteLine(GetTotalPoints());
-            // Save goals list
-            foreach (Goal goal in _goals)
+            string line;
+            while ((line = reader.ReadLine()) != null)
             {
-                outputFile.WriteLine(goal.SaveGoal());
-            }
-        }
-    }
+                string[] parts = line.Split('|');
 
-    public void LoadGoals()
-    {
-        Console.Write("\nWhat is the name of your goal file?  ");
-        string userInput = Console.ReadLine();
-        string userFileName = userInput + ".txt";
-
-        if (File.Exists(userFileName))
-        {
-            string[] readText = File.ReadAllLines(userFileName);
-
-            // read the first line of text file for total stored points
-            int totalPoints = int.Parse(readText[0]);
-            SetTotalPoints(totalPoints);
-            // skip the first line of text file to read to goals
-            readText = readText.Skip(1).ToArray();
-            // loop though text file for goals
-            foreach (string line in readText)
-            {
-                string[] entries = line.Split("; ");
-
-                string type = entries[0];
-                string name = entries[1];
-                string description = entries[2];
-                int points = int.Parse(entries[3]);
-                bool status = Convert.ToBoolean(entries[4]);
-
-                if (entries[0] == "Simple Goal:")
+                if (parts.Length < 4)
                 {
-                    SimpleGoal sGoal = new SimpleGoal(type, name, description, points, status);
-                    AddGoal(sGoal);
+                    Console.WriteLine("Skipping invalid goal entry.");
+                    continue;
                 }
-                if (entries[0] == "Eternal Goal:")
+
+                string type = parts[0];
+                string name = parts[1];
+                string description = parts[2];
+                if (!int.TryParse(parts[3], out int pointsWorth))
                 {
-                    EternalGoal eGoal = new EternalGoal(type, name, description, points, status);
-                    AddGoal(eGoal);
+                    Console.WriteLine("Skipping entry due to invalid point value.");
+                    continue;
                 }
-                if (entries[0] == "Check List Goal:")
+
+                try
                 {
-                    int numberTimes = int.Parse(entries[5]);
-                    int bonusPoints = int.Parse(entries[6]);
-                    int counter = int.Parse(entries[7]);
-                    ChecklistGoal clGoal = new ChecklistGoal(type, name, description, points, status, numberTimes, bonusPoints, counter);
-                    AddGoal(clGoal);
+                    switch (type)
+                    {
+                        case "SimpleGoal":
+                            bool isComplete = parts.Length > 4 && bool.TryParse(parts[4], out bool parsedComplete) && parsedComplete;
+                            _goals.Add(new SimpleGoal(name, description, pointsWorth, isComplete));
+                            break;
+
+                        case "EternalGoal":
+                            _goals.Add(new EternalGoal(name, description, pointsWorth));
+                            break;
+
+                        case "ChecklistGoal":
+                            if (parts.Length < 7 ||
+                                !int.TryParse(parts[4], out int timesCompleted) ||
+                                !int.TryParse(parts[5], out int targetCount) ||
+                                !int.TryParse(parts[6], out int bonusPoints))
+                            {
+                                Console.WriteLine("Skipping invalid ChecklistGoal entry.");
+                                continue;
+                            }
+
+                            _goals.Add(new ChecklistGoal(name, description, pointsWorth, bonusPoints, targetCount, timesCompleted));
+                            break;
+
+                        default:
+                            Console.WriteLine("Unknown goal type found, skipping entry.");
+                            break;
+                    }
                 }
-                if (entries[0] == "Negative Goal:")
+                catch (Exception ex)
                 {
-                    NegativeGoal nGoal = new NegativeGoal(type, name, description, points, status);
-                    AddGoal(nGoal);
+                    Console.WriteLine($"Error processing goal entry: {ex.Message}");
                 }
             }
         }
+
+        _totalScore = CalculateTotalScore();
+        Console.WriteLine("Goals loaded successfully!");
+        DisplayTotalScore();
+        DisplayGoals();
     }
-
-
 }

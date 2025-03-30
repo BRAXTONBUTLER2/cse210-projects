@@ -1,44 +1,28 @@
-using System;
-
 public abstract class Goal
 {
-    // Attributes
-    private string _type;
     private string _name;
     private string _description;
-    private int _points;
+    private int _pointsWorth;
+    private int _earnedPoints; 
 
-
-    // Constructors
-    public Goal(string type, string name, string description, int points)
+    public Goal(string name, string description, int pointsWorth)
     {
-        _type = type;
         _name = name;
         _description = description;
-        _points = points;
-    }
-    public string GetType()
-    {
-        return _type;
-    }
-    public string GetName()
-    {
-        return _name;
-    }
-    public string GetDescription()
-    {
-        return _description;
-    }
-    public int GetPoints()
-    {
-        return _points;
+        _pointsWorth = pointsWorth;
+        _earnedPoints = 0;
     }
 
+    public string GetName() => _name;
+    public string GetDescription() => _description;
+    public int GetPointsWorth() => _pointsWorth;
+    public int GetEarnedPoints() => _earnedPoints; 
 
-    // Methods
-    public abstract void ListGoal(int i);
-    public abstract string SaveGoal();
-    public abstract string LoadGoal();
-    public abstract void RecordGoalEvent(List<Goal> goals);
+    protected void AddPoints(int points)
+    {
+        _earnedPoints += points;
+    }
 
+    public abstract void RecordProgress();
+    public abstract string DisplayStatus();
 }

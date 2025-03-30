@@ -1,49 +1,35 @@
-using System;
-
 public class SimpleGoal : Goal
 {
-    // Attributes
-    private string _type = "Simple Goal:";
-    private bool _status;
+    private bool _isComplete;
 
-    // Constructors
-    public SimpleGoal(string type, string name, string description, int points) : base(type, name, description, points)
+    public SimpleGoal(string name, string description, int pointsWorth, bool isComplete = false)
+        : base(name, description, pointsWorth)
     {
-        _status = false;
-    }
-    public SimpleGoal(string type, string name, string description, int points, bool status) : base(type, name, description, points)
-    {
-        _status = status;
-    }
-    public Boolean Finished()
-    {
-        return _status;
+        _isComplete = isComplete;
     }
 
-    // Methods
-    public override void ListGoal(int i)
+    public override void RecordProgress()
     {
-        if (Finished() == false)
+        if (!_isComplete)
         {
-            Console.WriteLine($"{i}. [ ] {GetName()} ({GetDescription()})");
+            _isComplete = true;
+            AddPoints(GetPointsWorth());
+            Console.WriteLine($"Goal '{GetName()}' completed! You earned {GetPointsWorth()} points.");
         }
-        else if (Finished() == true)
+        else
         {
-            Console.WriteLine($"{i}. [X] {GetName()} ({GetDescription()})");
+            Console.WriteLine($"Goal '{GetName()}' is already completed.");
         }
     }
-    public override string SaveGoal()
+
+    public override string DisplayStatus()
     {
-        return ($"{_type}; {GetName()}; {GetDescription()}; {GetPoints()}; {_status}");
-    }
-    public override string LoadGoal()
-    {
-        return ($"{_type}; {GetName()}; {GetDescription()}; {GetPoints()}; {_status}");
-    }
-    public override void RecordGoalEvent(List<Goal> goals)
-    {
-       _status = true;
-       Console.WriteLine($"Congratulations! You have earned {GetPoints()} points!");
+        return _isComplete
+            ? $"✅ {GetName()} - {GetDescription()} ({GetPointsWorth()} Points) (Completed)"
+            : $"⬜ {GetName()} - {GetDescription()} ({GetPointsWorth()} Points)";
     }
 
+    public bool IsComplete() => _isComplete;
 }
+
+

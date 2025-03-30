@@ -1,40 +1,22 @@
-using System;
-
 public class EternalGoal : Goal
 {
-    // Attributes
-    private string _type = "Eternal Goal:";
-    private bool _status;
+    private int _recordCount;
 
-
-    // Constructors
-    public EternalGoal(string type, string name, string description, int points) : base(type, name, description, points)
+    public EternalGoal(string name, string description, int pointsPerCompletion)
+        : base(name, description, pointsPerCompletion)
     {
-        _status = false;
-    }
-    public EternalGoal(string type, string name, string description, int points, bool status) : base(type, name, description, points)
-    {
-        _status = status;
+        _recordCount = 0;
     }
 
-    // Methods
-
-    public override void ListGoal(int i)
+    public override void RecordProgress()
     {
-        Console.WriteLine($"{i}. [ ] {GetName()} ({GetDescription()})");
-    }
-    public override string SaveGoal()
-    {
-        return ($"{_type}; {GetName()}; {GetDescription()}; {GetPoints()}; {_status}");
-    }
-    public override string LoadGoal()
-    {
-        return ($"{_type}; {GetName()}; {GetDescription()}; {GetPoints()}; {_status}");
-    }
-      public override void RecordGoalEvent(List<Goal> goals)
-    {
-       Console.WriteLine($"Congratulations! You have earned {GetPoints()} points!");
+        AddPoints(GetPointsWorth()); 
+        _recordCount++;
+        Console.WriteLine($"Progress logged for '{GetName()}'. You've gained {GetPointsWorth()} points! (Recorded {_recordCount} times)");
     }
 
-
+    public override string DisplayStatus()
+    {
+        return $"🔄 {GetName()} - {GetDescription()} ({GetPointsWorth()} Points) (Logged {_recordCount} times)";
+    }
 }

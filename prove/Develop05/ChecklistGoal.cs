@@ -1,93 +1,53 @@
-using System;
-
 public class ChecklistGoal : Goal
 {
-    // Attributes
-    private string _type = "Check List Goal:";
-    private int _numberTimes;
-    private int _bonusPoints;
-    private bool _status;
-    private int _count;
+    private int _completionPoints;
+    private int _rewardBonus;
+    private int _completionTarget;
+    private int _currentCompletions;
 
-
-    // Constructors
-    public ChecklistGoal(string type, string name, string description, int points, int numberTimes, int bonusPoints) : base(type, name, description, points)
+    public ChecklistGoal(string name, string description, int completionPoints, int rewardBonus, int completionTarget, int currentCompletions = 0) 
+        : base(name, description, completionPoints)
     {
-        _status = false;
-        _numberTimes = numberTimes;
-        _bonusPoints = bonusPoints;
-        _count = 0;
-    }
-    public ChecklistGoal(string type, string name, string description, int points, bool status, int numberTimes, int bonusPoints, int count) : base(type, name, description, points)
-    {
-        _status = status;
-        _numberTimes = numberTimes;
-        _bonusPoints = bonusPoints;
-        _count = count;
+        _completionPoints = completionPoints;
+        _rewardBonus = rewardBonus;
+        _completionTarget = completionTarget;
+        _currentCompletions = currentCompletions;
     }
 
-    public int GetTimes()
-    {
-        return _numberTimes;
-    }
-    public void SetTimes()
-    {
-        _count = _count + 1;
-    }
-     public int GetCount()
-    {
-        return _count;
-    }
-    public void SetCount()
-    {
+    public int GetCurrentCompletions() => _currentCompletions;
+    public int GetCompletionTarget() => _completionTarget;
+    public int GetRewardBonus() => _rewardBonus;
+    public void SetCurrentCompletions(int count) => _currentCompletions = count;
 
-    }
-     public int GetBonusPoints()
+    public override void RecordProgress()
     {
-        return _bonusPoints;
-    }
-    public Boolean Finished()
-    {
-        return _status;
-    }
-
-    // Methods
-    public override void ListGoal(int i)
-    {
-        if (Finished() == false)
+        if (_currentCompletions < _completionTarget)
         {
-            Console.WriteLine($"{i}. [ ] {GetName()} ({GetDescription()})  --  Currently Completed: {GetCount()}/{GetTimes()}");
-        }
-        else if (Finished() == true)
-        {
-            Console.WriteLine($"{i}. [X] {GetName()} ({GetDescription()})  --  Completed: {GetCount()}/{GetTimes()}");
-        }
+            _currentCompletions++;
+            AddPoints(_completionPoints);
+            Console.WriteLine($"Progress recorded for '{GetName()}'. ({_currentCompletions}/{_completionTarget})");
 
-    }
-    public override string SaveGoal()
-    {
-        return ($"{_type}; {GetName()}; {GetDescription()}; {GetPoints()}; {_status}; {GetTimes()}; {GetBonusPoints()}; {GetCount()}");
-    }
-    public override string LoadGoal()
-    {
-        return ($"Simple Goal:; {GetName()}; {GetDescription()}; {GetPoints()}; {_status}; {GetTimes()}; {GetBonusPoints()}; {GetCount()}");
-    }
-    public override void RecordGoalEvent(List<Goal> goals)
-    {
-        SetTimes();
-        int points = GetPoints();
-
-        if (_count == _numberTimes)
-        {
-            _status = true;
-            points = points + _bonusPoints;
-  
-            Console.WriteLine($"Congratulations! You have earned {points} points!");
+            if (_currentCompletions == _completionTarget)
+            {
+                AddPoints(_rewardBonus);
+                Console.WriteLine($"Completed! Bonus {_rewardBonus} points awarded!");
+            }
         }
         else
         {
-            Console.WriteLine($"Congratulations! You have earned {GetPoints()} points!");
+            Console.WriteLine($"'{GetName()}' is already completed.");
         }
     }
 
+    public override string DisplayStatus()
+    {
+        return _currentCompletions >= _completionTarget
+            ? $"✅ {GetName()} - {GetDescription()} ({GetPointsWorth()} Points) (Completed {_currentCompletions}/{_completionTarget})"
+            : $"⬜ {GetName()} - {GetDescription()} ({GetPointsWorth()} Points) (Completed {_currentCompletions}/{_completionTarget})";
+    }
+
+    public bool IsComplete()
+    {
+        return _currentCompletions >= _completionTarget;
+    }
 }
