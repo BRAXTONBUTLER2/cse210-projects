@@ -1,5 +1,6 @@
 public class EternalGoal : Goal
 {
+    // I exedeed requirnments by gamifying the goals, you can earn points by completing goals         :)//
     private int _recordCount;
 
     public EternalGoal(string name, string description, int pointsPerCompletion)
