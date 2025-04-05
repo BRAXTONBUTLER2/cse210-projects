@@ -18,8 +18,9 @@ public class Product
         return _unitPrice * _productQuantity;
     }
 
-    public string GetProductDetails()
+    
+    public string GetPackingInfo()
     {
-        return $"{_productName} (ID: {_productCode})";
+        return $"{_productName} (ID: {_productCode}) - Qty: {_productQuantity}";
     }
 }

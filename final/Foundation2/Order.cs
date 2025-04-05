@@ -18,29 +18,45 @@ public class Order
 
     public double CalculateTotalCost()
     {
-        double totalAmount = 0;
-        foreach (Product product in _orderProducts)
+        double total = 0;
+
+        // Loop through each product and add up total cost
+        foreach (Product item in _orderProducts)
         {
-            totalAmount += product.CalculateTotalCost();
+            total += item.CalculateTotalCost();
         }
 
-        double shippingCost = _orderCustomer.IsLivingInUSA() ? 5 : 35;
-        return totalAmount + shippingCost;
+        // Add shipping based on location
+        double shipping;
+        if (_orderCustomer.IsLivingInUSA())
+        {
+            shipping = 5;
+        }
+        else
+        {
+            shipping = 35;
+        }
+
+        return total + shipping;
     }
 
     public string GeneratePackingLabel()
     {
-        StringBuilder packingLabel = new StringBuilder();
-        packingLabel.AppendLine("Packing Label:");
-        foreach (Product product in _orderProducts)
+        StringBuilder label = new StringBuilder();
+        label.AppendLine("Packing Label:");
+
+        foreach (Product item in _orderProducts)
         {
-            packingLabel.AppendLine(product.GetPackingInfo());
+            label.AppendLine(item.GetPackingInfo());
         }
-        return packingLabel.ToString();
+
+        return label.ToString();
     }
 
     public string GenerateShippingLabel()
     {
-        return $"Shipping Label:\n{_orderCustomer.GetCustomerName()}\n{_orderCustomer.GetCustomerAddress()}";
+        string customerName = _orderCustomer.GetCustomerName();
+        string customerAddress = _orderCustomer.GetCustomerAddress().ToString(); // Assumes Address class has ToString method
+        return $"Shipping Label:\n{customerName}\n{customerAddress}";
     }
 }
